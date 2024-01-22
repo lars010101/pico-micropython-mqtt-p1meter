@@ -54,36 +54,49 @@ def parse_message(data):
     def extract(expression, group):
         return re.search(expression, data).group(group)
 
-    def decode_timestamp(timestamp, dst):
+#    def decode_timestamp(timestamp, dst):
+    def decode_timestamp(timestamp):
         year = "20" + timestamp[0:2]
         month = timestamp[2:4]
         day = timestamp[4:6]
         hour = timestamp[6:8]
         minute = timestamp[8:10]
         second = timestamp[10:12]
-        if dst == "S":
-            tzinfo = "+02:00"
-        elif dst == "X":
-            tzinfo = "+01:00"
-        return "%s-%s-%sT%s:%s:%s%s" % (year, month, day, hour, minute, second, tzinfo)
+#        if dst == "S":
+#            tzinfo = "+02:00"
+#        elif dst == "X":
+#            tzinfo = "+01:00"
+#        return "%s-%s-%sT%s:%s:%s%s" % (year, month, day, hour, minute, second, tzinfo)
+        return "%s-%s-%sT%s:%s:%s" % (year, month, day, hour, minute, second)
 
-    extracted_data = {"date_time": decode_timestamp(extract("\d-\d:1\.0\.0\((\d+)(.)", 1),  # DateTime
-                                                    extract("\d-\d:1\.0\.0\((\d+)(.)", 2)),  # DST
-                      "energy1": extract("\d-\d:1\.8\.1\((\d+.\d+)", 1),
-                      "energy2": extract("\d-\d:1\.8\.2\((\d+.\d+)", 1),
-                      "tariff": extract("\d-\d:96\.14\.0\((\d+.\d+)", 1),
-                      "power": extract("\d-\d:1\.7\.0\((\d+.\d+)", 1),
-                      "n_power_failures": extract("\d-\d:96\.7\.21\((\d+.\d+)", 1),
-                      "n_long_power_failures": extract("\d-\d:96\.7\.9\((\d+.\d+)", 1),
-                      "n_voltage_drops": extract("\d-\d:32\.32\.0\((\d+.\d+)", 1),
-                      "n_voltage_surges": extract("\d-\d:32\.36\.0\((\d+.\d+)", 1),
-                      "instant_voltage": extract("\d-\d:32\.7\.0\((\d+.\d+)", 1),
-                      "instant_current": extract("\d-\d:31\.7\.0\((\d+.\d+)", 1),
-                      "instant_active_power": extract("\d-\d:21\.7\.0\((\d+.\d+)", 1),
-                      "gas_date_time": decode_timestamp(extract("\d-\d:24\.2\.1\((\d+.\d+)(.)\)\((\d+.\d+)", 1),
-                                                        # DateTime
-                                                        extract("\d-\d:24\.2\.1\((\d+.\d+)(.)\)\((\d+.\d+)", 2)),  # DST
-                      "gas_volume": extract("\d-\d:24\.2\.1\((\d+.\d+)(.)\)\((\d+.\d+)", 3)}  # (group 3 regex)
+    extracted_data = {"date_time": decode_timestamp(extract("\d-\d:1\.0\.0\((\d+)(.)", 1)),  # DateTime
+#                                                    extract("\d-\d:1\.0\.0\((\d+)(.)", 2)),  # DST
+                      "meter_active_energy_out": extract("\d-\d:1\.8\.0\((\d+.\d+)", 1),
+                      "meter_active_energy_in": extract("\d-\d:2\.8\.0\((\d+.\d+)", 1),
+                      "meter_reactive_energy_out": extract("\d-\d:3\.8\.0\((\d+.\d+)", 1),
+                      "meter_reactive_energy_in": extract("\d-\d:4\.8\.0\((\d+.\d+)", 1),
+                      "active_power_out": extract("\d-\d:1\.7\.0\((\d+.\d+)", 1),
+                      "active_power_in": extract("\d-\d:2\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_out": extract("\d-\d:3\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_in": extract("\d-\d:4\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L1_out": extract("\d-\d:21\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L1_in": extract("\d-\d:41\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L2_out": extract("\d-\d:61\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L2_in": extract("\d-\d:22\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L3_out": extract("\d-\d:42\.7\.0\((\d+.\d+)", 1),
+                      "active_power_L3_in": extract("\d-\d:62\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L1_out": extract("\d-\d:23\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L1_in": extract("\d-\d:43\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L2_out": extract("\d-\d:63\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L2_in": extract("\d-\d:24\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L3_out": extract("\d-\d:44\.7\.0\((\d+.\d+)", 1),
+                      "reactive_power_L3_in": extract("\d-\d:64\.7\.0\((\d+.\d+)", 1),
+                      "voltage_L1": extract("\d-\d:32\.7\.0\((\d+.\d+)", 1),
+                      "voltage_L2": extract("\d-\d:52\.7\.0\((\d+.\d+)", 1),
+                      "voltage_L3": extract("\d-\d:72\.7\.0\((\d+.\d+)", 1),
+                      "current_L1": extract("\d-\d:31\.7\.0\((\d+.\d+)", 1),
+                      "current_L2": extract("\d-\d:51\.7\.0\((\d+.\d+)", 1),
+                      "current_L3": extract("\d-\d:71\.7\.0\((\d+.\d+)", 1)}  
 
     return extracted_data
 
@@ -99,7 +112,7 @@ def read_and_publish(timer):
 print(pico_id)
 
 # Check if LED works
-print("Cheking LED for 5 seconds")
+print("Checking LED for 5 seconds")
 led = Pin("LED", Pin.OUT)
 led.on()
 time.sleep(5)
@@ -158,8 +171,16 @@ def publish_config(discovery_topic, name, device_class=None, unit_of_measurement
 
 
 publish_config("date_time", "Timestamp electricity", "timestamp")
-publish_config("energy1", "Energy High Tariff", "energy", "kWh", "total_increasing")
-publish_config("energy2", "Energy Low Tariff", "energy", "kWh", "total_increasing")
+publish_config("meter_active_energy_out", "Meter active energy out", "energy", "kWh", "total_increasing")
+publish_config("meter_active_energy_in", "Meter active energy in", "energy", "kWh", "total_increasing")
+publish_config("meter_reactive_energy_out", "Meter reactive energy out", "energy", "kWh", "total_increasing")
+publish_config("meter_reactive_energy_in", "Meter reactive energy in", "energy", "kWh", "total_increasing")
+publish_config("active_power_out", "Active power out", "power", "kW", "measurement")
+publish_config("active_power_in", "Active power in", "power", "kW", "measurement")
+publish_config("reactive_power_out", "Reactive power out", "power", "kW", "measurement")
+publish_config("reactive_power_in", "Reactive power in", "power", "kW", "measurement")
+
+
 publish_config("tariff", "Tariff")
 publish_config("power", "Actual power", "power", "kW", "measurement")
 publish_config("n_power_failures", "N. of power failures", state_class="total_increasing")
