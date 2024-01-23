@@ -9,6 +9,10 @@ from machine import Pin, UART, Timer
 import time
 import re
 
+mqtt_ip = "192.168.1.229"
+drqst_gpio = 28
+uart_id = 0
+
 DEBUG = const(False)
 # Create a unique name for the Pico
 pico_id = "pico-" + ubinascii.hexlify(machine.unique_id()).decode()
@@ -124,9 +128,9 @@ wlan.active(True)
 wlan.connect(wifi_SSID, wifi_password)
 
 # Initialize UART for P1 port
-data_request_pin = Pin(28, Pin.IN, pull=None, value=1)  # Data request pin cannot be low as per specification.It has
+data_request_pin = Pin(drqst_gpio, Pin.IN, pull=None, value=1)  # Data request pin cannot be low as per specification.It has
 # to be high impedance state. We store value 1 so when we change it to Pin.OUT it is immediately set to high.
-uart = UART(0, 115200, invert=UART.INV_RX)
+uart = UART(uart_id, 115200, invert=UART.INV_RX)
 
 # Checking Wi-Fi before continuing
 tim = Timer()
@@ -138,7 +142,7 @@ print("Connected, wlan status " + str(wlan.status()))
 tim.deinit()
 led.off()
 
-c = MQTTClient(pico_id, "192.168.1.100", keepalive=30)
+c = MQTTClient(pico_id, mqtt_ip, keepalive=30)
 c.set_last_will(pico_id + "/system/status", "offline", retain=True)
 c.connect()
 
